@@ -1,0 +1,30 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/chatbotspiil/chatbot', '.']
+
+  # Step 2: Push the Docker image to Google Container Registry (GCR)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/chatbotspiil/chatbot']
+
+  # Step 3: Deploy to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'gradio-app'  # Ganti nama aplikasi sesuai kebutuhan
+      - '--image'
+      - 'gcr.io/chatbotspiil/chatbot'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--timeout'
+      - '3600'
+
+timeout: '1800s'  # 15 menit
+
+images:
+  - 'gcr.io/chatbotspiil/chatbot'
